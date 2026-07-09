@@ -1,0 +1,41 @@
+-- Получаем доступ к защищенному сервису CoreGui (доступно только в эксплоитерах)
+local coreGui = game:GetService("CoreGui")
+local runService = game:GetService("RunService")
+
+local function createShield()
+    -- Проверяем, не создан ли щит уже
+    if coreGui:FindFirstChild("ExploitAntiClickShield") then return end
+    
+    -- Создаем ScreenGui прямо в CoreGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ExploitAntiClickShield"
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true -- Заходим на самый верхний край экрана
+    screenGui.DisplayOrder = 2147483647 -- Максимальный приоритет рендера
+    
+    -- Создаем блокирующую рамку
+    local blockerFrame = Instance.new("Frame")
+    blockerFrame.Name = "Blocker"
+    blockerFrame.Size = UDim2.new(0, 310, 0, 60) -- Покрывает верхний левый угол с запасом
+    blockerFrame.Position = UDim2.new(0, 0, 0, 0)
+    
+    -- ВОЗВРАЩАЕМ ПОЛНУЮ ПРОЗРАЧНОСТЬ: Панель снова на 100% невидима
+    blockerFrame.BackgroundTransparency = 1
+    blockerFrame.BorderSizePixel = 0
+    
+    -- Перехват абсолютно всех событий мыши, кликов и тапов намертво
+    blockerFrame.Active = true
+    blockerFrame.ZIndex = 2147483647
+    
+    blockerFrame.Parent = screenGui
+    screenGui.Parent = coreGui
+end
+
+-- Подключаемся к Heartbeat (срабатывает каждый кадр игры)
+-- Защищает от удаления интерфейса при смерти или очистке со стороны игры
+runService.Heartbeat:Connect(function()
+    createShield()
+end)
+
+-- Первый принудительный запуск
+createShield()
