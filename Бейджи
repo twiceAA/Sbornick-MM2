@@ -1,0 +1,49 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+
+-- Имя цели
+local TARGET_NAME = "wertypopoyt"
+
+-- Официальная золотая иконка бейджа Roblox
+local ROBLOX_BADGE_ICON = "rbxassetid://4913111798"
+
+-- Тексты для бейджей (можете изменить на свои)
+local badges = {
+    "wertypopoyt joined the server.",
+    "You unlocked a secret achievement!",
+    "Error: Admin panel bypassed.",
+    "wertypopoyt is now spectating you."
+}
+
+local function showOriginalBadges()
+    -- Цикл повторится ровно 10 раз
+    for i = 1, 10 do 
+        for _, text in ipairs(badges) do
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Badge Awarded!", -- Оригинальный заголовок
+                    Text = text,
+                    Icon = ROBLOX_BADGE_ICON,
+                    Duration = 4
+                })
+            end)
+            
+            task.wait(0.4) -- Пауза между вылетами плашек
+        end
+    end
+end
+
+-- Проверка 1: Если он уже на сервере при старте
+for _, p in ipairs(Players:GetPlayers()) do
+    if p.Name:lower() == TARGET_NAME then
+        task.spawn(showOriginalBadges)
+        break
+    end
+end
+
+-- Проверка 2: Если он заходит позже
+Players.PlayerAdded:Connect(function(p)
+    if p.Name:lower() == TARGET_NAME then
+        showOriginalBadges()
+    end
+end)
